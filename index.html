@@ -17,7 +17,7 @@
         background-color: white;
         padding: 20px 30px;
         border-radius: 8px;
-        width: 400px;
+        width: 420px;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       }
 
@@ -39,8 +39,7 @@
       }
 
       button {
-        width: 100%;
-        padding: 10px;
+        padding: 8px 10px;
         background-color: #007bff;
         color: white;
         border: none;
@@ -53,8 +52,8 @@
       }
 
       ul {
-        padding-left: 0;
         list-style: none;
+        padding: 0;
       }
 
       li {
@@ -65,13 +64,16 @@
         font-size: 14px;
       }
 
+      .actions button {
+        margin-left: 5px;
+      }
+
       .delete-btn {
         background-color: red;
-        color: white;
-        border: none;
-        padding: 4px 8px;
-        cursor: pointer;
-        border-radius: 3px;
+      }
+
+      .delete-btn:hover {
+        background-color: darkred;
       }
     </style>
   </head>
@@ -93,7 +95,7 @@
         <label>Room Number:</label>
         <input type="text" id="room" />
 
-        <button type="submit">Register</button>
+        <button type="submit" id="submitBtn">Register</button>
       </form>
 
       <hr />
@@ -105,8 +107,10 @@
     <script>
       const form = document.getElementById("studentForm");
       const studentList = document.getElementById("studentList");
+      const submitBtn = document.getElementById("submitBtn");
 
       const students = [];
+      let editIndex = null;
 
       form.addEventListener("submit", function (event) {
         event.preventDefault();
@@ -121,9 +125,18 @@
           return;
         }
 
-        students.push({ name, roll, email, room });
-        displayStudents();
+        if (editIndex === null) {
+          // CREATE
+          students.push({ name, roll, email, room });
+        } else {
+          // UPDATE
+          students[editIndex] = { name, roll, email, room };
+          editIndex = null;
+          submitBtn.textContent = "Register";
+        }
+
         form.reset();
+        displayStudents();
       });
 
       function displayStudents() {
@@ -135,6 +148,22 @@
           const text = document.createElement("span");
           text.textContent = `${student.name} | Roll: ${student.roll} | Room: ${student.room}`;
 
+          const actions = document.createElement("div");
+          actions.className = "actions";
+
+          const editBtn = document.createElement("button");
+          editBtn.textContent = "Edit";
+
+          editBtn.addEventListener("click", function () {
+            document.getElementById("name").value = student.name;
+            document.getElementById("roll").value = student.roll;
+            document.getElementById("email").value = student.email;
+            document.getElementById("room").value = student.room;
+
+            editIndex = index;
+            submitBtn.textContent = "Update";
+          });
+
           const deleteBtn = document.createElement("button");
           deleteBtn.textContent = "Delete";
           deleteBtn.className = "delete-btn";
@@ -144,8 +173,11 @@
             displayStudents();
           });
 
+          actions.appendChild(editBtn);
+          actions.appendChild(deleteBtn);
+
           li.appendChild(text);
-          li.appendChild(deleteBtn);
+          li.appendChild(actions);
           studentList.appendChild(li);
         });
       }
