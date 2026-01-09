@@ -105,82 +105,92 @@
     </div>
 
     <script>
-      const form = document.getElementById("studentForm");
-      const studentList = document.getElementById("studentList");
-      const submitBtn = document.getElementById("submitBtn");
+  const form = document.getElementById("studentForm");
+  const studentList = document.getElementById("studentList");
+  const submitBtn = document.getElementById("submitBtn");
 
-      const students = [];
-      let editIndex = null;
+  const students = [];
+  let editIndex = null;
 
-      form.addEventListener("submit", function (event) {
-        event.preventDefault();
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
 
-        const name = document.getElementById("name").value;
-        const roll = document.getElementById("roll").value;
-        const email = document.getElementById("email").value;
-        const room = document.getElementById("room").value;
+    const name = document.getElementById("name").value;
+    const roll = document.getElementById("roll").value;
+    const email = document.getElementById("email").value;
+    const room = document.getElementById("room").value;
 
-        if (!name || !roll || !email || !room) {
-          alert("Please fill all fields");
-          return;
-        }
+    if (!name || !roll || !email || !room) {
+      alert("Please fill all fields");
+      return;
+    }
 
-        if (editIndex === null) {
-          // CREATE
-          students.push({ name, roll, email, room });
-        } else {
-          // UPDATE
-          students[editIndex] = { name, roll, email, room };
-          editIndex = null;
-          submitBtn.textContent = "Register";
-        }
+    if (editIndex === null) {
+      // CREATE
+      students.push({ name, roll, email, room });
+    } else {
+      // UPDATE
+      students[editIndex] = { name, roll, email, room };
+      editIndex = null;
+      submitBtn.textContent = "Register";
+    }
 
-        form.reset();
+    form.reset();
+    displayStudents();
+  });
+
+  function displayStudents() {
+    studentList.innerHTML = "";
+
+    students.forEach((student, index) => {
+      const li = document.createElement("li");
+      li.style.display = "flex";
+      li.style.justifyContent = "space-between";
+      li.style.alignItems = "center";
+
+      const text = document.createElement("span");
+      text.textContent = `${student.name} | Roll: ${student.roll} | Room: ${student.room}`;
+
+      const actions = document.createElement("div");
+
+      // EDIT BUTTON
+      const editBtn = document.createElement("button");
+      editBtn.textContent = "Edit";
+      editBtn.style.marginRight = "5px";
+
+      editBtn.addEventListener("click", function () {
+        document.getElementById("name").value = student.name;
+        document.getElementById("roll").value = student.roll;
+        document.getElementById("email").value = student.email;
+        document.getElementById("room").value = student.room;
+
+        editIndex = index;
+        submitBtn.textContent = "Update";
+      });
+
+      // DELETE BUTTON
+      const deleteBtn = document.createElement("button");
+      deleteBtn.textContent = "Delete";
+      deleteBtn.style.backgroundColor = "red";
+      deleteBtn.style.color = "white";
+      deleteBtn.style.border = "none";
+      deleteBtn.style.padding = "4px 8px";
+      deleteBtn.style.cursor = "pointer";
+
+      deleteBtn.addEventListener("click", function () {
+        students.splice(index, 1);
         displayStudents();
       });
 
-      function displayStudents() {
-        studentList.innerHTML = "";
+      actions.appendChild(editBtn);
+      actions.appendChild(deleteBtn);
 
-        students.forEach((student, index) => {
-          const li = document.createElement("li");
+      li.appendChild(text);
+      li.appendChild(actions);
+      studentList.appendChild(li);
+    });
+  }
+</script>
 
-          const text = document.createElement("span");
-          text.textContent = `${student.name} | Roll: ${student.roll} | Room: ${student.room}`;
-
-          const actions = document.createElement("div");
-          actions.className = "actions";
-
-          const editBtn = document.createElement("button");
-          editBtn.textContent = "Edit";
-
-          editBtn.addEventListener("click", function () {
-            document.getElementById("name").value = student.name;
-            document.getElementById("roll").value = student.roll;
-            document.getElementById("email").value = student.email;
-            document.getElementById("room").value = student.room;
-
-            editIndex = index;
-            submitBtn.textContent = "Update";
-          });
-
-          const deleteBtn = document.createElement("button");
-          deleteBtn.textContent = "Delete";
-          deleteBtn.className = "delete-btn";
-
-          deleteBtn.addEventListener("click", function () {
-            students.splice(index, 1);
-            displayStudents();
-          });
-
-          actions.appendChild(editBtn);
-          actions.appendChild(deleteBtn);
-
-          li.appendChild(text);
-          li.appendChild(actions);
-          studentList.appendChild(li);
-        });
-      }
-    </script>
   </body>
 </html>
